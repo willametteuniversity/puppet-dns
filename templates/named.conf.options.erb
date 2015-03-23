@@ -34,6 +34,14 @@ options {
     port <%= @listen_on_port %>;
 <% end -%>
 
+<% if @allow_transfer.size != 0 tnen -%>
+    allow-transfer {
+    <% @allow_transfer.each do |transfer| -%>
+        <%= transfer -%>
+    <% end -%>
+    };
+<% end -%>
+
 <% if @allow_recursion.size != 0 then -%>
     allow-recursion {
     <% @allow_recursion.each do |recursion| -%>
