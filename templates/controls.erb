@@ -1,0 +1,19 @@
+controls {
+<% if @controls -%>
+<% @controls.each do |control| -%>
+    inet <%= control['ip'] -%> port <%= control['port'] -%>
+
+<% if control['allow'] -%>
+    allow { <% control['allow'].each do |a| -%><%= a -%>; <% end -%>}
+<% else -%>
+    allow {}
+<% end -%>
+<% if control['keys'] -%>
+    keys { <% control['keys'].each do |k| -%><%= k -%>; <% end -%>};
+<% else -%>
+    keys {};
+<% end -%>
+<% end -%>
+<% end -%>
+};
+
