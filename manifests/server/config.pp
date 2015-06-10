@@ -1,11 +1,11 @@
 # == Class dns::server
 #
 class dns::server::config (
-  $cfg_dir  = $dns::server::params::cfg_dir,
+  $cfg_dir = $dns::server::params::cfg_dir,
   $cfg_file = $dns::server::params::cfg_file,
   $data_dir = $dns::server::params::data_dir,
-  $owner    = $dns::server::params::owner,
-  $group    = $dns::server::params::group,
+  $owner = $dns::server::params::owner,
+  $group = $dns::server::params::group,
 ) inherits dns::server::params {
 
   file { $cfg_dir:
@@ -38,6 +38,7 @@ class dns::server::config (
       File[$cfg_dir],
       Class['dns::server::install']
     ],
+    #content => template("${module_name}/core_config_file.erb"),
     notify  => Class['dns::server::service'],
   }
 

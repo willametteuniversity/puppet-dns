@@ -1,5 +1,5 @@
 options {
-	directory "/var/cache/bind";
+	directory "<%= @dns_directory -%>";
 
 	// If there is a firewall between you and nameservers you want
 	// to talk to, you may need to fix the firewall to allow multiple
@@ -21,13 +21,6 @@ options {
     <% end -%>};
 <% end -%>
 
-<% if @transfers.size != 0 then -%>
-    allow-transfer {
-    <% @transfers.each do |transfer| -%>
-      <%= transfer -%>;
-    <% end -%>};
-<% end -%>
-
 <% if @listen_on.size == 0 then -%>
     listen-on { any; };
 <% else -%>
@@ -39,14 +32,6 @@ options {
 
 <% if @listen_on_port -%>
     port <%= @listen_on_port %>;
-<% end -%>
-
-<% if @allow_transfer.size != 0 tnen -%>
-    allow-transfer {
-    <% @allow_transfer.each do |transfer| -%>
-        <%= transfer -%>
-    <% end -%>
-    };
 <% end -%>
 
 <% if @allow_recursion.size != 0 then -%>
@@ -63,6 +48,22 @@ options {
 	<%= query -%>;
     <% end -%>
     };
+<% end -%>
+<% if @allow_transfer.size != 0 then -%>
+    allow-transfer {
+    <% @allow_transfer.each do |transfer| -%>
+	<%= transfer -%>;
+    <% end -%>
+    };
+<% end -%>
+<% if @dump_file -%>
+	dump-file "<%= @dump_file -%>";
+<% end -%>
+<% if @statistics_file -%>
+	statistics-file "<%= @statistics_file -%>";
+<% end -%>
+<% if @memstatistics_file -%>
+	memstatistics-file "<%= @memstatistics_file -%>";
 <% end -%>
 
 <% if @check_names_master -%>
@@ -81,7 +82,17 @@ check-names response <%= @check_names_response %>;
 	// If BIND logs error messages about the root key being expired,
 	// you will need to update your keys.  See https://www.isc.org/bind-keys
 	//========================================================================
+	<% if @dnssec_enable -%>
+	dnssec-enable <%= @dnssec_enable -%>;
+	<% end -%>
+	<% if @dnssec_validation -%>
+	dnssec-validation <%= @dnssec_validation -%>;
+	<% else -%>
 	dnssec-validation auto;
+	<% end -%>
+	<% if @dnssec_lookaside -%>
+	dnssec-lookaside <%= @dnssec_lookaside -%>;
+	<% end -%>
 
 	auth-nxdomain no;    # conform to RFC1035
 	listen-on-v6 { any; };

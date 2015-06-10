@@ -17,4 +17,6 @@ $TTL	<%= @zone_ttl %>
 ;
 <% if @supplementary == true %>
 $INCLUDE db.<%= zone %>.supplementary;
+<% else %>
+; No supplementary file
 <% end -%>

@@ -13,11 +13,13 @@ define dns::zone (
   $zone_type = 'master',
   $allow_transfer = [],
   $allow_forwarder = [],
+  $allow_update = [],
   $forward_policy = 'first',
   $slave_masters = undef,
   $zone_notify = false,
   $ensure = present,
-  $supplementary = false
+  $supplementary = false,
+  $dynamic_zone = false,
 ) {
 
   $cfg_dir = $dns::server::params::cfg_dir
@@ -44,19 +46,31 @@ define dns::zone (
     file { $zone_file:
       ensure => absent,
     }
+
     file { "$zone_file.supplementary":
       ensure => absent,
     }
+
   } else {
     # Zone Database
-
     # Create "fake" zone file without zone-serial
+
+    # If it is a dynamic zone, we don't want to overwrite the existant zone file as that might
+    # erase records
+    if $dynamic_zone == true {
+      $replace_zone_file = false
+      $zone_bump_serial = undef
+    } else {
+      $replace_zone_file = true
+      $zone_bump_serial = Exec["bump-${zone}-serial"]
+    }
     concat { $zone_file_stage:
       owner   => $dns::server::params::owner,
       group   => $dns::server::params::group,
       mode    => '0644',
       require => [Class['concat::setup'], Class['dns::server']],
-      notify  => Exec["bump-${zone}-serial"]
+      replace => false,
+      notify  => $zone_bump_serial,
     }
     concat::fragment{"db.${name}.soa":
       target  => $zone_file_stage,
@@ -88,16 +102,16 @@ define dns::zone (
     content => template("${module_name}/zone.erb")
   }
 
-    # This ensures the supplementary zone file is present, even if it is just a blank one
   if $supplementary == true {
     file {"$zone_file.supplementary":
       replace => 'no',
       ensure  => 'present',
-      content => '; Supplementary file from Puppet\n',
-      owner   => "$group",
-      group   => "$owner",
+      content => "; Supplementary file from Puppet\n",
+      owner   => "named",
+      group   => "named",
       mode    => '0744',
     }
+
   }
 
 }

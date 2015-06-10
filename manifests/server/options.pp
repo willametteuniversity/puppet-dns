@@ -7,9 +7,6 @@
 # [*forwarders*]
 #   Array of forwarders IP addresses. Default: empty
 #
-# [*transfers*]
-#   Array of IP addresses or "none" allowed to transfer. Default: empty
-#
 # [*listen_on*]
 #   Array of IP addresses on which to listen. Default: empty, meaning "any"
 #
@@ -45,7 +42,6 @@
 #
 define dns::server::options (
   $forwarders = [],
-  $transfers = [],
   $listen_on = [],
   $listen_on_port = undef,
   $allow_recursion = [],
@@ -53,7 +49,14 @@ define dns::server::options (
   $check_names_slave = undef,
   $check_names_response = undef,
   $allow_query = [],
-  $allow_transfer =[],
+  $allow_transfer = [],
+  $dnssec_enable = undef,
+  $dnssec_validation = undef,
+  $dnssec_lookaside = undef,
+  $dns_directory = '/var/cache/bind',
+  $dump_file = undef,
+  $statistics_file = undef,
+  $memstatistics_file = undef,
 ) {
   $valid_check_names = ['fail', 'warn', 'ignore']
   $cfg_dir = $::dns::server::params::cfg_dir
@@ -63,7 +66,6 @@ define dns::server::options (
   }
 
   validate_array($forwarders)
-  validate_array($transfers)
   validate_array($listen_on)
   validate_array($allow_recursion)
   if $check_names_master != undef and !member($valid_check_names, $check_names_master) {

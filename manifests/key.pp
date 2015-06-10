@@ -3,7 +3,7 @@
 define dns::key {
   include dns::server::params
   $cfg_dir = $dns::server::params::cfg_dir # Used in a template
-
+  #$package = $dns::server::params::package
   file { "/tmp/${name}-secret.sh":
     ensure  => file,
     mode    => '0777',
@@ -15,7 +15,7 @@ define dns::key {
     command     => "/usr/sbin/dnssec-keygen -a HMAC-MD5 -r /dev/urandom -b 128 -n USER ${name}",
     cwd         => "${cfg_dir}/bind.keys.d",
     require     => [
-      Package['dnssec-tools',$package],
+      Package['dnssec-tools',$dns::server::params::package],
       File["${cfg_dir}/bind.keys.d"],
     ],
     refreshonly => true,
