@@ -20,6 +20,7 @@ define dns::zone (
   $ensure = present,
   $supplementary = false,
   $dynamic_zone = false,
+  $allow_query = undef,
 ) {
 
   $cfg_dir = $dns::server::params::cfg_dir
@@ -115,3 +116,4 @@ define dns::zone (
   }
 
 }
+

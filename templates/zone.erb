@@ -32,6 +32,18 @@ type <%= @zone_type %>;
     <% end -%>
     };
 <% end -%>
+<% if @allow_query -%>
+    allow-query {
+    <% @allow_query.each do |aq| -%>
+        <%= aq -%>;
+    <% end -%>
+    };
+<% else -%>
+    allow-query {
+        any;
+    };
+<% end -%>
 
 
 };
+
